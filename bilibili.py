@@ -98,7 +98,7 @@ class BiliSpider:
         senDict = defaultdict()
         for s in senList:
             s = s.replace("\n", "")
-            print(s)
+            #print(s)
             senDict[s.split(' ')[0]] = float(s.split(' ')[1])
 
         # 4.弹幕列表
