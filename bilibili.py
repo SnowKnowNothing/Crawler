@@ -7,10 +7,10 @@ import sys
 import xml.etree.ElementTree as ET
 import pandas as pd
 import numpy as np
-# import jieba
+#import jieba
 # scipy中处理图像的函数
 from scipy.misc import imread
-# from wordcloud import WordCloud,ImageColorGenerator
+#from wordcloud import WordCloud,ImageColorGenerator
 import matplotlib.pyplot as plt
 # %matplotlib inline
 import warnings
@@ -74,6 +74,27 @@ class BiliSpider:
         fileOb = open('bilibili.txt', 'w', encoding='utf-8')
         fileOb.write(xml_str)
         fileOb.close()
+    #绘制词云
+    def draw_word_picture(self,text_all):
+        # 设置背景图片以及字体
+        back_color = imread('backColor.jpg')
+        font = 'Tensentype-DouDouJ.ttf'
+        # 获取WordCloud对象
+        wc = WordCloud(background_color='white',
+                       max_words=1000,
+                       mask=back_color,
+                       font_path=font,
+                       random_state=15)
+        # jieba分词，形成有空格的字符串
+        word_list = []
+        word_generator = jieba.cut(text_all, cut_all=False)
+        for word in word_generator:
+            word_list.append(word)
+        text = ' '.join(word_list)
+        wc.generate(text)
+        plt.figure(figsize=(20, 10))
+        plt.axis('off')
+        plt.imshow(wc)
 
     def run(self):
         # 1.根据BV号获取弹幕的地址
@@ -84,9 +105,9 @@ class BiliSpider:
         self.write_file(xml_bytes)
         # 4.解析xml文件
         text_all = self.parseXml('bilibili.txt')
-        # 5.分词
-        # 6.绘制词云
-        # 7.情感分析
+        # 5.绘制词云
+        self.draw_word_picture(text_all)
+        # 6.情感分析
         ## 载入停用词，使用的是百度的停用词库
         f = open('baidu_stopwords.txt', encoding='UTF-8')
         stopwords = f.readlines()
