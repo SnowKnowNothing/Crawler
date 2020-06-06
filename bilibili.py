@@ -22,6 +22,7 @@ warnings.filterwarnings('ignore')
 class BiliSpider:
     def __init__(self, BV):
         # 构造要爬取的视频url地址
+        #
         self.BVurl = "https://bilibili.com/video/" + BV
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.116 Mobile Safari/537.36"}
