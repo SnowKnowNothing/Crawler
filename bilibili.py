@@ -78,13 +78,13 @@ class BiliSpider:
         fileOb.close()
     #绘制词云
     def draw_word_picture(self,text_all):
-        # 设置背景图片以及字体
-        back_color = imread('backColor.jpg')
+        # 设置文字颜色以及字体
+        word_color = imread('backColor.jpg')
         font = 'Tensentype-DouDouJ.ttf'
         # 获取WordCloud对象
         wc = WordCloud(background_color='white',
                        max_words=1000,
-                       mask=back_color,
+                       mask=word_color,
                        font_path=font,
                        random_state=15)
         # jieba分词，形成有空格的字符串
