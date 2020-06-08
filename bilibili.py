@@ -97,6 +97,8 @@ class BiliSpider:
         plt.figure(figsize=(20, 10))
         plt.axis('off')
         plt.imshow(wc)
+        plt.savefig('./bilibili_wordcloud.jpg')
+        plt.show()
 
     def run(self):
         # 1.根据BV号获取弹幕的地址
