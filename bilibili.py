@@ -1,5 +1,6 @@
 # coding=utf-8
 import requests
+from Cython.Shadow import inline
 from lxml import etree
 import re
 import sys
@@ -7,12 +8,13 @@ import sys
 import xml.etree.ElementTree as ET
 import pandas as pd
 import numpy as np
-#import jieba
+import jieba
 # scipy中处理图像的函数
+from matplotlib import pylab
 from scipy.misc import imread
-#from wordcloud import WordCloud,ImageColorGenerator
+from wordcloud import WordCloud,ImageColorGenerator
 import matplotlib.pyplot as plt
-# %matplotlib inline
+#%matplotlib inline
 import warnings
 from collections import defaultdict
 

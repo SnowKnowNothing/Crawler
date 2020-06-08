@@ -1,7 +1,9 @@
-# Crawlers
-some crawler programs
-## 爬虫1号(bilibili.py)
+# A Crawler for Bilibili
 
-可以根据视频地址爬取某个视频的弹幕。
+可以根据视频地址爬取某个视频的弹幕。以及对弹幕做可视化词云和情感分析。
 
-目前比较简陋，后续可以继续增加导出文件，数值统计，以及可视化等功能。
+## 准备步骤
+
+除了必要的依赖包，还需要通过命令行安装结巴分词（pip install jieba）
+
+以及词云包（pip install wordcloud）
