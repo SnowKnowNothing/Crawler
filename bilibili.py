@@ -70,6 +70,9 @@ class BiliSpider:
         for word in word_list:
             fileOb.write(word)
         fileOb.close()
+        #控制台输出弹幕
+        for word in word_list:
+            print(word)
         return word_list
 
     # 解析xml
@@ -212,23 +215,20 @@ class BiliSpider:
         plt.show()
 
     def run(self):
-        # 1.根据BV号获取弹幕的地址
+        # 1.根据BV号获取视频页源码解析出弹幕的地址
         start_url = self.getXml_url()
-        # 2.请求并解析数据
+        # 2.请求弹幕地址获取包含弹幕的xml文件
         xml_bytes = self.parse_url(start_url)
-        # 3.将xml写入文件
+        # 3.在本地保存视频弹幕的xml文件
         self.write_file(xml_bytes)
-        # 4.解析xml文件
+        # 4.解析xml文件，获取弹幕文本
         text_all = self.parseXml()
         # 5.绘制词云
         self.draw_word_picture(text_all)
         # 6.情感分析
         self.emotional_analysis(text_all)
-        # 4.弹幕列表
+        # 7.本地保存弹幕文本，控制台输出弹幕
         word_list = self.get_word_list(xml_bytes)
-        # 5.控制台打印弹幕列表
-        for word in word_list:
-            print(word)
 
 
 
