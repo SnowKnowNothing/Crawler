@@ -11,7 +11,7 @@ import numpy as np
 import jieba
 # scipy中处理图像的函数
 from matplotlib import pylab
-from scipy.misc import imread
+from scipy.misc import imread   #import imageio, imread -> imageio.imread
 from wordcloud import WordCloud, ImageColorGenerator
 import matplotlib.pyplot as plt
 import warnings
