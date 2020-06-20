@@ -94,8 +94,8 @@ class BiliSpider:
     # 绘制词云
     def draw_word_picture(self, text_all):
         # 设置文字颜色以及字体
-        word_color = imread('backColor.jpg')
-        font = 'Tensentype-DouDouJ.ttf'
+        word_color = imread('./StyleLibrary/backColor.jpg')
+        font = './StyleLibrary/Tensentype-DouDouJ.ttf'
         # 获取WordCloud对象
         wc = WordCloud(background_color='white',
                        max_words=1000,
@@ -130,12 +130,12 @@ class BiliSpider:
         self.draw_word_picture(text_all)
         # 6.情感分析
         ## 载入停用词，使用的是百度的停用词库
-        f = open('baidu_stopwords.txt', encoding='UTF-8')
+        f = open('./WordLibrary/baidu_stopwords.txt', encoding='UTF-8')
         stopwords = f.readlines()
         stopwords = [i.replace("\n", "") for i in stopwords]
 
         ## 载入情感词
-        f1 = open("BosonNLP_sentiment_score.txt", encoding='UTF-8')
+        f1 = open("./WordLibrary/BosonNLP_sentiment_score.txt", encoding='UTF-8')
         senList = f1.readlines()
         senDict = defaultdict()
         for s in senList:
