@@ -67,6 +67,11 @@ class BiliSpider:
     def get_word_list(self, str):
         html = etree.HTML(str)
         word_list = html.xpath("//d/text()")
+        txt_name = "./BilibiliBarrageFiles/" + self.BV + "_bilibili.txt"
+        fileOb = open(txt_name, 'w', encoding='utf-8')
+        for word in word_list:
+            fileOb.write(word)
+        fileOb.close()
         return word_list
 
     # 解析xml
