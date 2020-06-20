@@ -21,10 +21,16 @@ warnings.filterwarnings('ignore')
 
 
 class BiliSpider:
-    def __init__(self, BV):
+    def __init__(self, BV, VideoType):
         # 构造要爬取的视频url地址
         self.BV = BV
-        self.BVurl = "https://bilibili.com/video/" + BV
+        self.VideoType = VideoType
+        # 番剧和普通视频的URL规则不同
+        if VideoType == "1":
+            self.BVurl = "https://www.bilibili.com/bangumi/play/" + BV
+
+        else:
+            self.BVurl = "https://bilibili.com/video/" + BV
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.116 Mobile Safari/537.36"}
 
@@ -43,8 +49,12 @@ class BiliSpider:
         # 拼装弹幕请求地址:'//api.bilibili.com/x/v1/dm/list.so?oid=36482143'
         # 使用re匹配出的是地址中的弹幕请求参数名，即 36482143
         # getWord_url = re.findall("api.bilibili.com/x/v1/dm/list.so\?oid=(\d+)", html_str)
-        cid_num = re.compile(r'cid: \d+')
-        num = cid_num.search(html_str).group()
+        if self.VideoType == "1":
+            cid_num = re.compile(r'"cid":\d+')
+        else:
+            cid_num = re.compile(r'cid: \d+')
+        num_res = cid_num.search(html_str)
+        num=num_res.group()
         if num:
             cid_num = re.compile(r'\d+')
             num = cid_num.search(num).group()
@@ -70,7 +80,7 @@ class BiliSpider:
         for word in word_list:
             fileOb.write(word)
         fileOb.close()
-        #控制台输出弹幕
+        # 控制台输出弹幕
         for word in word_list:
             print(word)
         return word_list
@@ -202,6 +212,7 @@ class BiliSpider:
                 score = score + score0
                 score0 = 0
             return score
+
         score_list = []
         for i in t[0]:
             score_list.append(word_score(i))
@@ -231,12 +242,18 @@ class BiliSpider:
         word_list = self.save_print_word(xml_bytes)
 
 
-
-
 if __name__ == '__main__':
-    BVName = input("请输入要爬取的视频的BV号\n"
-                   "例如视频地址为https://www.bilibili.com/video/BV1MZ4y1x77S?spm_id_from=333.5.b_6d757369635f6f726967696e616c.33\n"
-                   "则输入（也可以包含？后的请求参数）：BV1MZ4y1x77S\n"
-                   "好了请输入吧：")
-    spider = BiliSpider(BVName)
+    VideoType = input("确认视频类型：1(番剧)，2（其他视频）\n"
+                      "请输入视频类型：")
+    if VideoType == "1":
+        Name = input("请输入要爬取的番剧号\n"
+                     "例如番剧地址为https://www.bilibili.com/bangumi/play/ep317441\n"
+                     "则输入：ep317441\n"
+                     "好了请输入吧：")
+    else:
+        Name = input("请输入要爬取的视频的BV号\n"
+                     "例如视频地址为https://www.bilibili.com/video/BV1MZ4y1x77S\n"
+                     "则输入：BV1MZ4y1x77S\n"
+                     "好了请输入吧：")
+    spider = BiliSpider(Name, VideoType)
     spider.run()
