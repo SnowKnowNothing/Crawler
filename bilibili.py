@@ -14,7 +14,6 @@ from matplotlib import pylab
 from scipy.misc import imread
 from wordcloud import WordCloud, ImageColorGenerator
 import matplotlib.pyplot as plt
-# %matplotlib inline
 import warnings
 from collections import defaultdict
 
@@ -44,12 +43,12 @@ class BiliSpider:
         # 格式为:'//api.bilibili.com/x/v1/dm/list.so?oid=36482143'
         # 我们分隔出的是地址中的弹幕请求参数名，即 36482143
         # getWord_url = re.findall("api.bilibili.com/x/v1/dm/list.so\?oid=(\d+)", html_str)
-        cid_num=re.compile(r'cid: \d+')
+        cid_num = re.compile(r'cid: \d+')
         num = cid_num.search(html_str).group()
         if num:
             cid_num = re.compile(r'\d+')
             num = cid_num.search(num).group()
-            print("弹幕的编号是："+num)
+            print("弹幕的编号是：" + num)
             # getWord_url = getWord_url.replace("'", "")
         else:
             print("未获取到URL，请重试！")
@@ -117,23 +116,28 @@ class BiliSpider:
         plt.figure(figsize=(20, 10))
         plt.axis('off')
         plt.imshow(wc)
-        #保存词云
+        # 保存词云
         wordcloud_name = "./WordCloudPictures/" + self.BV + "_wordcloud.jpg"
         plt.savefig(wordcloud_name)
         plt.show()
 
-    def run(self):
-        # 1.根据BV号获取弹幕的地址
-        start_url = self.getXml_url()
-        # 2.请求并解析数据
-        xml_bytes = self.parse_url(start_url)
-        # 3.将xml写入文件
-        self.write_file(xml_bytes)
-        # 4.解析xml文件
-        text_all = self.parseXml()
-        # 5.绘制词云
-        self.draw_word_picture(text_all)
-        # 6.情感分析
+        # 将文本数据进行分词过滤，载入列表
+
+    def sent2word(self, sentence, stopwords):
+        seglist = jieba.cut(sentence)
+        segResult = []
+        for w in seglist:
+            segResult.append(w)
+        newSent = []
+        # 如果词汇是在停用词中，则过滤掉
+        for word in segResult:
+            if word in stopwords:
+                continue
+            else:
+                newSent.append(word)
+        return newSent
+
+    def emotional_analysis(self, text_all):
         ## 载入停用词，使用的是百度的停用词库
         f = open('./WordLibrary/baidu_stopwords.txt', encoding='UTF-8')
         stopwords = f.readlines()
@@ -147,12 +151,83 @@ class BiliSpider:
             s = s.replace("\n", "")
             # print(s)
             senDict[s.split(' ')[0]] = float(s.split(' ')[1])
+        # 载入否定词
+        f2 = open("./WordLibrary/notDict.txt", encoding='UTF-8')
+        notList = f2.readlines()
+        notList = [x.replace("\n", "") for x in notList if x != '']
 
+        # 载入程度副词
+        f3 = open("./WordLibrary/degreeDict.txt", encoding='UTF-8')
+        degreeList = f3.readlines()
+        degreeDict = defaultdict()
+        for d in degreeList:
+            degreeDict[d.split(',')[0]] = float(d.split(',')[1])
+
+        t = []
+        t.append(self.sent2word(text_all, stopwords))
+
+        # 评分方法
+        def word_score(word_list):
+            id = []
+            for i in word_list:
+                if i in senDict.keys():
+                    id.append(1)
+                elif i in notList:
+                    id.append(2)
+                elif i in degreeDict.keys():
+                    id.append(3)
+
+            word_nake = []
+            for i in word_list:
+                if i in senDict.keys():
+                    word_nake.append(i)
+                elif i in notList:
+                    word_nake.append(i)
+                elif i in degreeDict.keys():
+                    word_nake.append(i)
+
+            score = 0
+            w = 1
+            score0 = 0
+            for i in range(len(id)):
+                if id[i] == 1:
+                    score0 = w * senDict[word_nake[i]]
+                    w = 1
+                elif id[i] == 2:
+                    w = -1
+                elif id[i] == 3:
+                    w = w * degreeDict[word_nake[i]]
+                score = score + score0
+                score0 = 0
+            return score
+        score_list = []
+        for i in t[0]:
+            score_list.append(word_score(i))
+        score_df = pd.DataFrame()
+        score_df['word'] = t[0]
+        score_df['score'] = score_list
+        score_df = score_df.drop_duplicates('word', keep='first')
+
+    def run(self):
+        # 1.根据BV号获取弹幕的地址
+        start_url = self.getXml_url()
+        # 2.请求并解析数据
+        xml_bytes = self.parse_url(start_url)
+        # 3.将xml写入文件
+        self.write_file(xml_bytes)
+        # 4.解析xml文件
+        text_all = self.parseXml()
+        # 5.绘制词云
+        self.draw_word_picture(text_all)
+        # 6.情感分析
+        self.emotional_analysis(text_all)
         # 4.弹幕列表
         word_list = self.get_word_list(xml_bytes)
         # 5.控制台打印弹幕
         for word in word_list:
             print(word)
+
+
 
 
 if __name__ == '__main__':
