@@ -208,6 +208,8 @@ class BiliSpider:
         score_df['score'] = score_list
         score_df = score_df.drop_duplicates('word', keep='first')
         score_df.plot()
+        results_name = "./AnalysisResults/" + self.BV + "_analysis_result.jpg"
+        plt.savefig(results_name)
         plt.show()
 
     def run(self):
@@ -225,7 +227,7 @@ class BiliSpider:
         self.emotional_analysis(text_all)
         # 4.弹幕列表
         word_list = self.get_word_list(xml_bytes)
-        # 5.控制台打印弹幕
+        # 5.控制台打印弹幕列表
         for word in word_list:
             print(word)
 
