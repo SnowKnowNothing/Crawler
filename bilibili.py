@@ -39,9 +39,9 @@ class BiliSpider:
         fileOb = open(html_name, 'w', encoding='utf-8')
         fileOb.write(html_str)
         fileOb.close()
-        # 使用正则找出该弹幕地址
-        # 格式为:'//api.bilibili.com/x/v1/dm/list.so?oid=36482143'
-        # 我们分隔出的是地址中的弹幕请求参数名，即 36482143
+        # 使用正则找出该弹幕编号cid:36482143（属于抽取web数据的第一种方法字符串匹配）
+        # 拼装弹幕请求地址:'//api.bilibili.com/x/v1/dm/list.so?oid=36482143'
+        # 使用re匹配出的是地址中的弹幕请求参数名，即 36482143
         # getWord_url = re.findall("api.bilibili.com/x/v1/dm/list.so\?oid=(\d+)", html_str)
         cid_num = re.compile(r'cid: \d+')
         num = cid_num.search(html_str).group()
@@ -49,9 +49,8 @@ class BiliSpider:
             cid_num = re.compile(r'\d+')
             num = cid_num.search(num).group()
             print("弹幕的编号是：" + num)
-            # getWord_url = getWord_url.replace("'", "")
         else:
-            print("未获取到URL，请重试！")
+            print("未获取到弹幕编号，请重试！")
             sys.exit()
         # 组装成要请求的xml地址
         xml_url = "https://api.bilibili.com/x/v1/dm/list.so?oid={}".format(num)
@@ -62,7 +61,7 @@ class BiliSpider:
         response = requests.get(url, headers=self.headers)
         return response.content
 
-    # 弹幕包含在xml中的<d></d>中，取出即可
+    # 弹幕包含在xml中的<d></d>中，使用lxml中的etree解析xml获取弹幕文本（属于抽取web数据的第二种方法通过DOM结构处理）
     def get_word_list(self, str):
         html = etree.HTML(str)
         word_list = html.xpath("//d/text()")
