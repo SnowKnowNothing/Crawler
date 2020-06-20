@@ -12,9 +12,9 @@ import jieba
 # scipy中处理图像的函数
 from matplotlib import pylab
 from scipy.misc import imread
-from wordcloud import WordCloud,ImageColorGenerator
+from wordcloud import WordCloud, ImageColorGenerator
 import matplotlib.pyplot as plt
-#%matplotlib inline
+# %matplotlib inline
 import warnings
 from collections import defaultdict
 
@@ -24,7 +24,7 @@ warnings.filterwarnings('ignore')
 class BiliSpider:
     def __init__(self, BV):
         # 构造要爬取的视频url地址
-        #
+        self.BV = BV
         self.BVurl = "https://bilibili.com/video/" + BV
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.116 Mobile Safari/537.36"}
@@ -34,17 +34,28 @@ class BiliSpider:
         # 获取该视频网页的内容
         response = requests.get(self.BVurl, headers=self.headers)
         html_str = response.content.decode()
+
+        # 保存获取到的网页源码
+        html_name = "./BilibiliHtmls/" + self.BV + "_bilibili.html"
+        fileOb = open(html_name, 'w', encoding='utf-8')
+        fileOb.write(html_str)
+        fileOb.close()
         # 使用正则找出该弹幕地址
         # 格式为:'//api.bilibili.com/x/v1/dm/list.so?oid=36482143'
         # 我们分隔出的是地址中的弹幕请求参数名，即 36482143
-        getWord_url = re.findall("api.bilibili.com/x/v1/dm/list.so\?oid=(\d+)", html_str)
-        if getWord_url:
-            getWord_url = getWord_url[0].replace("'", "")
+        # getWord_url = re.findall("api.bilibili.com/x/v1/dm/list.so\?oid=(\d+)", html_str)
+        cid_num=re.compile(r'cid: \d+')
+        num = cid_num.search(html_str).group()
+        if num:
+            cid_num = re.compile(r'\d+')
+            num = cid_num.search(num).group()
+            print("弹幕的编号是："+num)
+            # getWord_url = getWord_url.replace("'", "")
         else:
             print("未获取到URL，请重试！")
             sys.exit()
         # 组装成要请求的xml地址
-        xml_url = "https://api.bilibili.com/x/v1/dm/list.so?oid={}".format(getWord_url)
+        xml_url = "https://api.bilibili.com/x/v1/dm/list.so?oid={}".format(num)
         return xml_url
 
     # Xpath不能解析指明编码格式的字符串，所以此处我们不解码，还是二进制文本
@@ -59,9 +70,10 @@ class BiliSpider:
         return word_list
 
     # 解析xml
-    def parseXml(self, file):
+    def parseXml(self):
         text_all = ''''''
-        tree = ET.parse(file)
+        xml_name = "./BilibiliBarrageXmls/" + self.BV + "_bilibili.xml"
+        tree = ET.parse(xml_name)
         # 获取节点
         root = tree.getroot()
         for child in root:
@@ -74,11 +86,13 @@ class BiliSpider:
         # 将字节流编码
         xml_str = xml_bytes.decode('utf-8')
         # 打开文件，若无则新增
-        fileOb = open('bilibili.txt', 'w', encoding='utf-8')
+        xml_name = "./BilibiliBarrageXmls/" + self.BV + "_bilibili.xml"
+        fileOb = open(xml_name, 'w', encoding='utf-8')
         fileOb.write(xml_str)
         fileOb.close()
-    #绘制词云
-    def draw_word_picture(self,text_all):
+
+    # 绘制词云
+    def draw_word_picture(self, text_all):
         # 设置文字颜色以及字体
         word_color = imread('backColor.jpg')
         font = 'Tensentype-DouDouJ.ttf'
@@ -98,7 +112,9 @@ class BiliSpider:
         plt.figure(figsize=(20, 10))
         plt.axis('off')
         plt.imshow(wc)
-        plt.savefig('./bilibili_wordcloud.jpg')
+        #保存词云
+        wordcloud_name = "./WordCloudPictures/" + self.BV + "_wordcloud.jpg"
+        plt.savefig(wordcloud_name)
         plt.show()
 
     def run(self):
@@ -109,7 +125,7 @@ class BiliSpider:
         # 3.将xml写入文件
         self.write_file(xml_bytes)
         # 4.解析xml文件
-        text_all = self.parseXml('bilibili.txt')
+        text_all = self.parseXml()
         # 5.绘制词云
         self.draw_word_picture(text_all)
         # 6.情感分析
@@ -124,7 +140,7 @@ class BiliSpider:
         senDict = defaultdict()
         for s in senList:
             s = s.replace("\n", "")
-            #print(s)
+            # print(s)
             senDict[s.split(' ')[0]] = float(s.split(' ')[1])
 
         # 4.弹幕列表
