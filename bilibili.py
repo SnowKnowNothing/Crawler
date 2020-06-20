@@ -62,7 +62,7 @@ class BiliSpider:
         return response.content
 
     # 弹幕包含在xml中的<d></d>中，使用lxml中的etree解析xml获取弹幕文本（属于抽取web数据的第二种方法通过DOM结构处理）
-    def get_word_list(self, str):
+    def save_print_word(self, str):
         html = etree.HTML(str)
         word_list = html.xpath("//d/text()")
         txt_name = "./BilibiliBarrageFiles/" + self.BV + "_bilibili.txt"
@@ -228,7 +228,7 @@ class BiliSpider:
         # 6.情感分析
         self.emotional_analysis(text_all)
         # 7.本地保存弹幕文本，控制台输出弹幕
-        word_list = self.get_word_list(xml_bytes)
+        word_list = self.save_print_word(xml_bytes)
 
 
 
