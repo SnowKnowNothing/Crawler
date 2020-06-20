@@ -207,6 +207,8 @@ class BiliSpider:
         score_df['word'] = t[0]
         score_df['score'] = score_list
         score_df = score_df.drop_duplicates('word', keep='first')
+        score_df.plot()
+        plt.show()
 
     def run(self):
         # 1.根据BV号获取弹幕的地址
