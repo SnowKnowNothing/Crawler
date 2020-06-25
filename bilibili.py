@@ -220,7 +220,12 @@ class BiliSpider:
         score_df['word'] = t[0]
         score_df['score'] = score_list
         score_df = score_df.drop_duplicates('word', keep='first')
-        score_df.plot()
+        #score_df.plot()
+        score_df.plot(kind='hist',color='c')
+        plt.ylabel('')
+        plt.xlabel('Sentiment score')
+        plt.xlim(-6,6)
+        plt.grid(True,linestyle='--')
         results_name = "./AnalysisResults/" + self.BV + "_analysis_result.jpg"
         plt.savefig(results_name)
         plt.show()
