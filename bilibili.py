@@ -11,7 +11,7 @@ import numpy as np
 import jieba
 # scipy中处理图像的函数
 from matplotlib import pylab
-from scipy.misc import imread   #import imageio, imread -> imageio.imread
+from scipy.misc import imread  # import imageio, imread -> imageio.imread
 from wordcloud import WordCloud, ImageColorGenerator
 import matplotlib.pyplot as plt
 import warnings
@@ -37,7 +37,10 @@ class BiliSpider:
     # 弹幕都是在一个url请求中，该url请求在视频url的js脚本中构造
     def getXml_url(self):
         # 获取该视频网页的内容
-        response = requests.get(self.BVurl, headers=self.headers)
+        try:
+            response = requests.get(self.BVurl, headers=self.headers, timeout=10)
+        except requests.exceptions.ConnectionError as e:
+            print("连接超时")
         html_str = response.content.decode()
 
         # 保存获取到的网页源码
@@ -53,8 +56,7 @@ class BiliSpider:
             cid_num = re.compile(r'"cid":\d+')
         else:
             cid_num = re.compile(r'cid: \d+')
-        num_res = cid_num.search(html_str)
-        num=num_res.group()
+        num = cid_num.search(html_str).group()
         if num:
             cid_num = re.compile(r'\d+')
             num = cid_num.search(num).group()
@@ -68,7 +70,10 @@ class BiliSpider:
 
     # Xpath不能解析指明编码格式的字符串，所以此处我们不解码，还是二进制文本
     def parse_url(self, url):
-        response = requests.get(url, headers=self.headers)
+        try:
+            response = requests.get(url, headers=self.headers, timeout=10)
+        except requests.exceptions.ConnectionError as e:
+            print("连接失败")
         return response.content
 
     # 弹幕包含在xml中的<d></d>中，使用lxml中的etree解析xml获取弹幕文本（属于抽取web数据的第二种方法通过DOM结构处理）
