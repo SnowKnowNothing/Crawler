@@ -28,7 +28,6 @@ class BiliSpider:
         # 番剧和普通视频的URL规则不同
         if VideoType == "1":
             self.BVurl = "https://www.bilibili.com/bangumi/play/" + BV
-
         else:
             self.BVurl = "https://bilibili.com/video/" + BV
         self.headers = {
@@ -266,12 +265,10 @@ if __name__ == '__main__':
     #                  "则输入：BV1MZ4y1x77S\n"
     #                  "好了请输入吧：")
 
-    URL=input("请输入视频地址\n"
-              "例如视频地址为https://www.bilibili.com/video/BV1MZ4y1x77S\n"
-              "请输入:")
+    URL=input("请输入视频地址:")
     #判断地址类型，1-番剧，2-视频
     if "video" in URL:
-        VideoType=2
+        VideoType="2"
         see = re.compile(r'BV(.*)\?')
         result = see.search(URL)
         if result:
@@ -281,11 +278,13 @@ if __name__ == '__main__':
             see = re.compile(r'BV(.*)')
             Name = see.search(URL).group()
     elif "bangumi" in URL:
-        VideoType=1
-        see = re.compile(r'ep(.*)')
+        VideoType="1"
+        see = re.compile(r'play/(.*)')
         Name = see.search(URL).group()
-        #Name=re.sub(r'/',"",Name)
+        Name=re.sub(r'play/',"",Name)
     else:
         print("视频地址无效，请重新输入")
+        sys.exit()
+    Name=re.sub(r' ',"",Name)
     spider = BiliSpider(Name, VideoType)
     spider.run()
