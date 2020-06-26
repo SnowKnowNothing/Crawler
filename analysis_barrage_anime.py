@@ -64,7 +64,7 @@ def top_user_barrage(data):
     for i in range(5):
         x.append(data.index[i])
         y.append(data.弹幕信息.values[i])
-    bar = Bar("弹幕发送数量排名")
+    bar = pyecharts.Bar("弹幕发送数量排名")
     bar.add("发弹幕数Top5用户", x, y)
     return bar
 

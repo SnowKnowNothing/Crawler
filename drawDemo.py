@@ -1,5 +1,5 @@
 #导入柱状图-Bar
-from pyecharts import Bar
+from pyecharts.charts import Bar
 #设置行名
 columns = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 #设置数据
