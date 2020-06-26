@@ -253,17 +253,39 @@ class BiliSpider:
 
 
 if __name__ == '__main__':
-    VideoType = input("确认视频类型：1(番剧)，2（其他视频）\n"
-                      "请输入视频类型：")
-    if VideoType == "1":
-        Name = input("请输入要爬取的番剧号\n"
-                     "例如番剧地址为https://www.bilibili.com/bangumi/play/ep317441\n"
-                     "则输入：ep317441\n"
-                     "好了请输入吧：")
+    # VideoType = input("确认视频类型：1(番剧)，2（其他视频）\n"
+    #                   "请输入视频类型：")
+    # if VideoType == "1":
+    #     Name = input("请输入要爬取的番剧号\n"
+    #                  "例如番剧地址为https://www.bilibili.com/bangumi/play/ep317441\n"
+    #                  "则输入：ep317441\n"
+    #                  "好了请输入吧：")
+    # else:
+    #     Name = input("请输入要爬取的视频的BV号\n"
+    #                  "例如视频地址为https://www.bilibili.com/video/BV1MZ4y1x77S\n"
+    #                  "则输入：BV1MZ4y1x77S\n"
+    #                  "好了请输入吧：")
+
+    URL=input("请输入视频地址\n"
+              "例如视频地址为https://www.bilibili.com/video/BV1MZ4y1x77S\n"
+              "请输入:")
+    #判断地址类型，1-番剧，2-视频
+    if "video" in URL:
+        VideoType=2
+        see = re.compile(r'BV(.*)\?')
+        result = see.search(URL)
+        if result:
+            Name= result.group()
+            Name=re.sub(r'\?',"",Name)
+        else:
+            see = re.compile(r'BV(.*)')
+            Name = see.search(URL).group()
+    elif "bangumi" in URL:
+        VideoType=1
+        see = re.compile(r'ep(.*)')
+        Name = see.search(URL).group()
+        #Name=re.sub(r'/',"",Name)
     else:
-        Name = input("请输入要爬取的视频的BV号\n"
-                     "例如视频地址为https://www.bilibili.com/video/BV1MZ4y1x77S\n"
-                     "则输入：BV1MZ4y1x77S\n"
-                     "好了请输入吧：")
+        print("视频地址无效，请重新输入")
     spider = BiliSpider(Name, VideoType)
     spider.run()
