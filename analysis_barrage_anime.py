@@ -70,7 +70,7 @@ def top_user_barrage(data):
 
 '''每一集弹幕变化总量--折线图'''
 def every_episode_comment_change(episode_comment_dic):
-    line = pyecharts.line("每一集弹幕变化总量",'2018-12-27',width=1200,height=600)
+    line = pyecharts.Line("每一集弹幕变化总量",'2018-12-27',width=1200,height=600)
     keys = []
     values = []
     for i in episode_comment_dic:
@@ -115,7 +115,7 @@ def extract_words(data, num):
     dd = df.copy()
     message_list = [str(item) for item in dd.弹幕信息]
 
-    stop_words = set(line.strip() for line in open('stopwords.txt', encoding ='utf - 8'))
+    stop_words = set(line.strip() for line in open('./WordLibrary/baidu_stopwords.txt', encoding ='utf - 8'))
     new_list = []
     for subject in message_list:
         if subject.isspace():

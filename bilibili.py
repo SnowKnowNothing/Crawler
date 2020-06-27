@@ -302,7 +302,7 @@ class BiliSpider:
             # 2.根据cid获取所有话的弹幕文件保存为csv
             spider_anime.main(cid_list)
             # 3.进行统计数值分析输出图表
-            #analysis_barrage_anime.main(len(cid_list))
+            analysis_barrage_anime.main(len(cid_list))
 
 
 if __name__ == '__main__':
