@@ -127,7 +127,7 @@ def extract_words(data, num):
     dc = pd.DataFrame(new_list,columns=['message'])
     result = dc['message'].value_counts()
     final_result = result.sort_index()
-    name = final_result[final_result.values>=100]
+    name = final_result[final_result.values>=10]
     values = name.values.tolist()
     final_name = name.index.tolist()
     wordcloud = pyecharts.WordCloud("番剧-词云图")
@@ -165,7 +165,7 @@ def main(length):
         barrage_length_dic[i] = static_barrage_length(data)
 
         '''统计每一集的分词，热词，词云'''
-        ciyun_data_dic['i'] = data.copy()
+        ciyun_data_dic[i] = data.copy()
 
         i += 1
         del data

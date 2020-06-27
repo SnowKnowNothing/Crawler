@@ -51,7 +51,8 @@ def main(cid_list):
 
     '''最新弹幕文件'''
     for i in range(len(cid_list)):
-        url = "https://comment.bilibili.com/%d.xml" % cid_list[i]
+        #url = "https://comment.bilibili.com/%d.xml" % cid_list[i]
+        url = "https://api.bilibili.com/x/v1/dm/list.so?oid={}".format(cid_list[i])
         url_list.append(url)
         file_name = "./AnimeBarrageFiles/now{}.csv".format(i + 1)
         with open(file_name,'w',newline='',errors='ignore') as fd:
