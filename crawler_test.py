@@ -32,7 +32,7 @@ if __name__ == '__main__':
             for tag in tag_list:
                 word_freq[tag] = 1 if word_freq.get(tag, 0) == 0 else word_freq[tag] + 1
             #
-            spider = BiliSpider(item['bvid'])
+            spider = BiliSpider(item['bvid'], item['type'])
             print(spider.getXml_url())
         word_freq = sorted(word_freq.items(),key=itemgetter(1), reverse=True)
         # 统计值大于1的加入词频列表
