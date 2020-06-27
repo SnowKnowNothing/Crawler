@@ -221,7 +221,7 @@ def main(length):
         ciyun = extract_words(data,num)
     page.add(ciyun)
 
-    page.render('最终.html')
+    page.render('result.html')
 
 if __name__ == '__main__':
     main()

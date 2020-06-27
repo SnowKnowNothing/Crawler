@@ -12,3 +12,30 @@
 
 安装snapshot，下载网址https://pypi.org/project/pyecharts-snapshot/0.1.10/#files
 然后在下载文件目录打开命令行执行pip install pyecharts_snapshot-0.1.10-py2.py3-none-any.whl
+
+## 目录说明
+### 文件夹
+AnalysisResult用于保存情感分析的图片结果
+
+AnimeBarrageFiles用于以csv的格式分话保存一个番剧的弹幕
+
+BilibiliBarrageFile用于保存解析后单个视频的弹幕文本
+
+BilibiliBarrageXmls用于保存下载的单个视频弹幕的xml文件
+
+StyleLibrary用于保存样式文件
+
+WorldCloudPictures用于保存单个视频文件的词云
+
+WordLibrary用于保存情感分析使用的词库
+
+### 文件
+bilibili.py主程序源码
+
+spider_anime.py番剧弹幕下载处理源码
+
+analysis_barrage_anime.py番剧弹幕统计分析可视化输出源码
+
+drawDemo.py画图工具测试
+
+*.html可视化图表输出，浏览器打开
