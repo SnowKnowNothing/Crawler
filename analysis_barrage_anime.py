@@ -130,8 +130,8 @@ def extract_words(data, num):
     name = final_result[final_result.values>=10]
     values = name.values.tolist()
     final_name = name.index.tolist()
-    wordcloud = pyecharts.WordCloud("番剧-词云图")
-    wordcloud.add("",final_name,values)
+    wordcloud = pyecharts.WordCloud("番剧第%d话-词云图" % num)
+    wordcloud.add("第%d话" % num,final_name,values)
     return wordcloud
 
 def main(length):
@@ -217,9 +217,10 @@ def main(length):
         line2 = barrage_compress_plt(data,num)
     page.add(line2)
     '''制作词云'''
+    #wordcloud = pyecharts.WordCloud("番剧-词云图")
     for num,data in ciyun_data_dic.items():
-        ciyun = extract_words(data,num)
-    page.add(ciyun)
+        cloud=extract_words(data,num)
+        page.add(cloud)
 
     page.render('result.html')
 
