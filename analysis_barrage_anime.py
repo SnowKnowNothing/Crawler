@@ -142,8 +142,8 @@ def main(length):
     path = os.getcwd()
     path=path+"./AnimeBarrageFiles"
     path_list = []
-    for i in range(1,length):
-        path_list.append(path+"\\now{}.csv".format(i))
+    for i in range(length):
+        path_list.append(path+"\\now{}.csv".format(i+1))
 
     episode_comment_dic = {}     #弹幕总量
     user_sum_dic = {}            #各用户发送弹幕数量
@@ -211,8 +211,8 @@ def main(length):
     now_barrage_list = []
     barrage_compress_dic = {}
     timeline4 = pyecharts.Timeline(is_auto_play=True, timeline_bottom=0)
-    for i in range(1,length):
-        now_barrage_list.append(path2+"\\now{}.csv".format(i))
+    for i in range(length):
+        now_barrage_list.append(path2+"\\now{}.csv".format(i+1))
     k=1
     for item in now_barrage_list:
         data = pd.read_csv(item.strip(),encoding='gbk',engine='python')
