@@ -36,6 +36,8 @@ spider_anime.py番剧弹幕下载处理源码
 
 analysis_barrage_anime.py番剧弹幕统计分析可视化输出源码
 
+emotion_analysis.py情感分析源码
+
 drawDemo.py画图工具测试
 
 *.html可视化图表输出，浏览器打开
