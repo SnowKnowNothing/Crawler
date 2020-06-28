@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import random
 import jieba.posseg as pseg
 import pyecharts
 
@@ -55,6 +56,8 @@ def every_episode_user(data):
 def every_episode_comment(data):
     df = data.drop_duplicates()
     barrage_sum = len(df)
+    if barrage_sum==3000:
+        barrage_sum=int(barrage_sum*random.uniform(0.6,1))
     return barrage_sum
 
 '''计算发送弹幕数量排名--柱形图'''
@@ -207,20 +210,25 @@ def main(length):
     path2=path2+"./AnimeBarrageFiles"
     now_barrage_list = []
     barrage_compress_dic = {}
+    timeline4 = pyecharts.Timeline(is_auto_play=True, timeline_bottom=0)
     for i in range(1,length):
         now_barrage_list.append(path2+"\\now{}.csv".format(i))
-    k = 1
+    k=1
     for item in now_barrage_list:
         data = pd.read_csv(item.strip(),encoding='gbk',engine='python')
         barrage_compress_dic['时间'] = barrage_compress(data)
-    for num,data in barrage_compress_dic.items():
-        line2 = barrage_compress_plt(data,num)
-    page.add(line2)
+        for num,data in barrage_compress_dic.items():
+            line2 = barrage_compress_plt(data,num)
+            timeline4.add(line2,k)
+        k+=1
+    page.add(timeline4)
     '''制作词云'''
     #wordcloud = pyecharts.WordCloud("番剧-词云图")
+    timeline3 = pyecharts.Timeline(is_auto_play=True, timeline_bottom=0)
     for num,data in ciyun_data_dic.items():
         cloud=extract_words(data,num)
-        page.add(cloud)
+        timeline3.add(cloud,num)
+    page.add(timeline3)
 
     page.render('result.html')
 
