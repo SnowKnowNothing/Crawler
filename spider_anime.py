@@ -65,22 +65,6 @@ def main(cid_list):
                     writer.writerow(row)
             del comment
 
-    # '''按照集数，取出弹幕链接，进行爬虫，获取弹幕记录，并保存到csv文件'''
-    # for i in range(len(cid_list)):
-    #     file_name = "./AnimeBarrageFiles/d{}.csv".format(i+1)
-    #     for j in range(1,len(cid_list)):
-    #         for date in range(2):
-    #             barrage_url = first_barrage_url.format(cid_list[i],"%02d" % j,"%02d" % (1 + date * 14))
-    #             with open(file_name,'a',newline='',errors='ignore') as fd :
-    #                 writer = csv.writer(fd)
-    #                 writer.writerow(tableheader)
-    #                 final_list = request_get_comment(barrage_url)
-    #                 if final_list:
-    #                     for row in final_list:
-    #                         writer.writerow(row)
-    #                 del final_list
-
-
 if __name__ == "__main__":
     main()
 

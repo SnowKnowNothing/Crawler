@@ -153,9 +153,11 @@ class BiliSpider:
                        random_state=15)
         # jieba分词，形成有空格的字符串
         word_list = []
+        stop_words = set(line.strip() for line in open('./WordLibrary/baidu_stopwords.txt', encoding='utf - 8'))
         word_generator = jieba.cut(text_all, cut_all=False)
         for word in word_generator:
-            word_list.append(word)
+            if word not in stop_words:
+                word_list.append(word)
         text = ' '.join(word_list)
         wc.generate(text)
         plt.figure(figsize=(20, 10))
