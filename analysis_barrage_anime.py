@@ -140,7 +140,7 @@ def extract_words(data, num):
     dc = pd.DataFrame(new_list,columns=['message'])
     result = dc['message'].value_counts()
     final_result = result.sort_index()
-    name = final_result[final_result.values>=10]
+    name = final_result[final_result.values>=5]
     values = name.values.tolist()
     final_name = name.index.tolist()
     wordcloud = pyecharts.WordCloud("番剧第%d话-词云图" % num)
@@ -241,15 +241,28 @@ def main(length):
 
     '''情感分析'''
     timeline5 = pyecharts.Timeline(is_auto_play=True, timeline_bottom=0)
+    #横轴区间
+    score = ["[-6,-5]", "[-5,-4]", "[-4,-3]", "[-3,-2]", "[-2,-1]", "[-1,0]", "[0,1]", "[1,2]", "[2,3]", "[3,4]",
+             "[4,5]", "[5,6]"]
+    nums = [-6.0, -5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
     for i in barrage_text_dic:
         text=barrage_text_dic[i]
         emotion_score=emotion_analysis.emotional_analysis(text)
-        line = pyecharts.Line("情感分析结果")
-        line.add("词的情感得分", emotion_score.index, emotion_score.score)
-        timeline5.add(line,i)
+        count=[]
+        for item in nums:
+            count_num=0
+            for j in emotion_score.score:
+                if (j>=item) and (j<item+1):
+                    count_num+=1
+                    #emotion_score.drop(index=(emotion_score.loc[(emotion_score['score'] == j)].index))
+            count.append(count_num)
+        bar = pyecharts.Bar("情感分析结果-第%d集" % i)
+        bar.add("各个情感得分区间的弹幕数量",score,count)
+        timeline5.add(bar,i)
+        del emotion_score
     page.add(timeline5)
 
     page.render('result.html')
 
 if __name__ == '__main__':
-    main()
+    main(15)
