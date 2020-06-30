@@ -5,8 +5,18 @@ import random
 import jieba.posseg as pseg
 import pyecharts
 
+import emotion_analysis
+
+'''获取弹幕文本'''
+def barrage_text(data):
+    text_all = ''''''
+    df = data.drop_duplicates()
+    for item in df.弹幕信息:
+        text_all=text_all+str(item)
+    return text_all
+
 '''绘制密度图'''
-def barrage_compress_plt(data,num):
+def barrage_compress_plt(data):
     line = pyecharts.Line("弹幕密度图")
     keys = [item for item in data.index]
     values = [item for item in data]
@@ -150,6 +160,8 @@ def main(length):
     user_sort_dic = {}           #各用户发送弹幕数量排序
     barrage_length_dic = {}      #弹幕长度
     ciyun_data_dic = {}          #词云
+    barrage_compress_dic={}      #弹幕密度
+    barrage_text_dic={}          #弹幕文本
     i = 1
     for path in path_list:
         '''读取csv数据源文件'''
@@ -169,6 +181,12 @@ def main(length):
 
         '''统计每一集的分词，热词，词云'''
         ciyun_data_dic[i] = data.copy()
+
+        '''统计每一集的弹幕密度'''
+        barrage_compress_dic[i] = barrage_compress(data)
+
+        '''统计每一集的弹幕文本'''
+        barrage_text_dic[i]= barrage_text(data)
 
         i += 1
         del data
@@ -206,22 +224,13 @@ def main(length):
     page.add(bar)
 
     '''弹幕密度'''
-    path2 = os.getcwd()
-    path2=path2+"./AnimeBarrageFiles"
-    now_barrage_list = []
-    barrage_compress_dic = {}
     timeline4 = pyecharts.Timeline(is_auto_play=True, timeline_bottom=0)
-    for i in range(length):
-        now_barrage_list.append(path2+"\\now{}.csv".format(i+1))
-    k=1
-    for item in now_barrage_list:
-        data = pd.read_csv(item.strip(),encoding='gbk',engine='python')
-        barrage_compress_dic['时间'] = barrage_compress(data)
-        for num,data in barrage_compress_dic.items():
-            line2 = barrage_compress_plt(data,num)
-            timeline4.add(line2,k)
-        k+=1
+    for i in barrage_compress_dic:
+        data=barrage_compress_dic[i]
+        line2 = barrage_compress_plt(data)
+        timeline4.add(line2, i)
     page.add(timeline4)
+
     '''制作词云'''
     #wordcloud = pyecharts.WordCloud("番剧-词云图")
     timeline3 = pyecharts.Timeline(is_auto_play=True, timeline_bottom=0)
@@ -229,6 +238,16 @@ def main(length):
         cloud=extract_words(data,num)
         timeline3.add(cloud,num)
     page.add(timeline3)
+
+    '''情感分析'''
+    timeline5 = pyecharts.Timeline(is_auto_play=True, timeline_bottom=0)
+    for i in barrage_text_dic:
+        text=barrage_text_dic[i]
+        emotion_score=emotion_analysis.emotional_analysis(text)
+        line = pyecharts.Line("情感分析结果")
+        line.add("词的情感得分", emotion_score.index, emotion_score.score)
+        timeline5.add(line,i)
+    page.add(timeline5)
 
     page.render('result.html')
 
