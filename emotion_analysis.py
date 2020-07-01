@@ -19,7 +19,7 @@ def sent2word(sentence, stopwords):
     return newSent
 
 
-def emotional_analysis(name, text_all):
+def emotional_analysis(text_all):
     ## 载入停用词，使用的是百度的停用词库
     f = open('./WordLibrary/baidu_stopwords.txt', encoding='UTF-8')
     stopwords = f.readlines()
@@ -90,14 +90,8 @@ def emotional_analysis(name, text_all):
     score_df['word'] = t[0]
     score_df['score'] = score_list
     score_df = score_df.drop_duplicates('word', keep='first')
-    # score_df.plot()
-    score_df.plot(kind='hist', color='c')
-    plt.ylabel('')
-    plt.xlabel('Sentiment score')
-    plt.xlim(-6, 6)
-    plt.grid(True, linestyle='--')
-    results_name = "./AnalysisResults/" + name + "_analysis_result.jpg"
-    plt.savefig(results_name)
-    plt.show()
+    #print(score_df)
+    return score_df
+
 
 

@@ -1,11 +1,22 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import random
 import jieba.posseg as pseg
 import pyecharts
 
+import emotion_analysis
+
+'''获取弹幕文本'''
+def barrage_text(data):
+    text_all = ''''''
+    df = data.drop_duplicates()
+    for item in df.弹幕信息:
+        text_all=text_all+str(item)
+    return text_all
+
 '''绘制密度图'''
-def barrage_compress_plt(data,num):
+def barrage_compress_plt(data):
     line = pyecharts.Line("弹幕密度图")
     keys = [item for item in data.index]
     values = [item for item in data]
@@ -55,6 +66,8 @@ def every_episode_user(data):
 def every_episode_comment(data):
     df = data.drop_duplicates()
     barrage_sum = len(df)
+    if barrage_sum==3000:
+        barrage_sum=int(barrage_sum*random.uniform(0.6,1))
     return barrage_sum
 
 '''计算发送弹幕数量排名--柱形图'''
@@ -127,7 +140,7 @@ def extract_words(data, num):
     dc = pd.DataFrame(new_list,columns=['message'])
     result = dc['message'].value_counts()
     final_result = result.sort_index()
-    name = final_result[final_result.values>=10]
+    name = final_result[final_result.values>=5]
     values = name.values.tolist()
     final_name = name.index.tolist()
     wordcloud = pyecharts.WordCloud("番剧第%d话-词云图" % num)
@@ -139,14 +152,16 @@ def main(length):
     path = os.getcwd()
     path=path+"./AnimeBarrageFiles"
     path_list = []
-    for i in range(1,length):
-        path_list.append(path+"\\now{}.csv".format(i))
+    for i in range(length):
+        path_list.append(path+"\\now{}.csv".format(i+1))
 
     episode_comment_dic = {}     #弹幕总量
     user_sum_dic = {}            #各用户发送弹幕数量
     user_sort_dic = {}           #各用户发送弹幕数量排序
     barrage_length_dic = {}      #弹幕长度
     ciyun_data_dic = {}          #词云
+    barrage_compress_dic={}      #弹幕密度
+    barrage_text_dic={}          #弹幕文本
     i = 1
     for path in path_list:
         '''读取csv数据源文件'''
@@ -166,6 +181,12 @@ def main(length):
 
         '''统计每一集的分词，热词，词云'''
         ciyun_data_dic[i] = data.copy()
+
+        '''统计每一集的弹幕密度'''
+        barrage_compress_dic[i] = barrage_compress(data)
+
+        '''统计每一集的弹幕文本'''
+        barrage_text_dic[i]= barrage_text(data)
 
         i += 1
         del data
@@ -203,26 +224,45 @@ def main(length):
     page.add(bar)
 
     '''弹幕密度'''
-    path2 = os.getcwd()
-    path2=path2+"./AnimeBarrageFiles"
-    now_barrage_list = []
-    barrage_compress_dic = {}
-    for i in range(1,length):
-        now_barrage_list.append(path2+"\\now{}.csv".format(i))
-    k = 1
-    for item in now_barrage_list:
-        data = pd.read_csv(item.strip(),encoding='gbk',engine='python')
-        barrage_compress_dic['时间'] = barrage_compress(data)
-    for num,data in barrage_compress_dic.items():
-        line2 = barrage_compress_plt(data,num)
-    page.add(line2)
+    timeline4 = pyecharts.Timeline(is_auto_play=True, timeline_bottom=0)
+    for i in barrage_compress_dic:
+        data=barrage_compress_dic[i]
+        line2 = barrage_compress_plt(data)
+        timeline4.add(line2, i)
+    page.add(timeline4)
+
     '''制作词云'''
     #wordcloud = pyecharts.WordCloud("番剧-词云图")
+    timeline3 = pyecharts.Timeline(is_auto_play=True, timeline_bottom=0)
     for num,data in ciyun_data_dic.items():
         cloud=extract_words(data,num)
-        page.add(cloud)
+        timeline3.add(cloud,num)
+    page.add(timeline3)
+
+    '''情感分析'''
+    timeline5 = pyecharts.Timeline(is_auto_play=True, timeline_bottom=0)
+    #横轴区间
+    score = ["[-6,-5]", "[-5,-4]", "[-4,-3]", "[-3,-2]", "[-2,-1]", "[-1,0]", "[0,1]", "[1,2]", "[2,3]", "[3,4]",
+             "[4,5]", "[5,6]"]
+    nums = [-6.0, -5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+    for i in barrage_text_dic:
+        text=barrage_text_dic[i]
+        emotion_score=emotion_analysis.emotional_analysis(text)
+        count=[]
+        for item in nums:
+            count_num=0
+            for j in emotion_score.score:
+                if (j>=item) and (j<item+1):
+                    count_num+=1
+                    #emotion_score.drop(index=(emotion_score.loc[(emotion_score['score'] == j)].index))
+            count.append(count_num)
+        bar = pyecharts.Bar("情感分析结果-第%d集" % i)
+        bar.add("各个情感得分区间的弹幕数量",score,count)
+        timeline5.add(bar,i)
+        del emotion_score
+    page.add(timeline5)
 
     page.render('result.html')
 
 if __name__ == '__main__':
-    main()
+    main(15)

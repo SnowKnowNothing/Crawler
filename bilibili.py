@@ -186,6 +186,16 @@ class BiliSpider:
         cid_list = [int(x) for x in cid_list]
         del cid_list[len(cid_list) - 1]
         return cid_list
+    def draw_picture(self,score_df):
+        # score_df.plot()
+        score_df.plot(kind='hist', color='c')
+        plt.ylabel('')
+        plt.xlabel('Sentiment score')
+        plt.xlim(-6, 6)
+        plt.grid(True, linestyle='--')
+        results_name = "./AnalysisResults/" + self.BV + "_analysis_result.jpg"
+        plt.savefig(results_name)
+        plt.show()
 
     def run(self):
         # 视频弹幕处理逻辑BV
@@ -201,8 +211,10 @@ class BiliSpider:
             # 5.绘制词云
             self.draw_word_picture(text_all)
             # 6.情感分析
-            emotion_analysis.emotional_analysis(self.BV,text_all)
-            # 7.本地保存弹幕文本，控制台输出弹幕
+            score=emotion_analysis.emotional_analysis(text_all)
+            # 7.绘情感得分图
+            self.draw_picture(score)
+            # 8.本地保存弹幕文本，控制台输出弹幕
             word_list = self.save_print_word(xml_bytes)
         # 番剧弹幕处理逻辑
         elif self.VideoType == "1":
