@@ -9,6 +9,7 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 import numpy as np
 import jieba
+import jieba.analyse
 # scipy中处理图像的函数
 from matplotlib import pylab
 from scipy.misc import imread  # import imageio, imread -> imageio.imread
@@ -152,11 +153,15 @@ class BiliSpider:
                        font_path=font,
                        random_state=15)
         # jieba分词，形成有空格的字符串
-        word_list = []
-        word_generator = jieba.cut(text_all, cut_all=False)
-        for word in word_generator:
-            word_list.append(word)
-        text = ' '.join(word_list)
+        # word_list = []
+        # word_generator = jieba.cut(text_all, cut_all=False)
+        # for word in word_generator:
+        #     word_list.append(word)
+        # text = ' '.join(word_list)
+        jieba.analyse.set_stop_words('./WordLibrary/baidu_stopwords.txt')
+        # 提取前100个关键词，形容词，动词，叹词，成语等
+        tags = jieba.analyse.extract_tags(text_all, topK=100, allowPOS=['Ag', 'a', 'e', 'i', 'v', 'vd', 'vn', 'y'])
+        text = ','.join(tags)
         wc.generate(text)
         plt.figure(figsize=(20, 10))
         plt.axis('off')
