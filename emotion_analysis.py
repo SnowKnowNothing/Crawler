@@ -58,11 +58,14 @@ def emotional_analysis(text_all):
                 id.append(2)
             elif i in degreeDict.keys():
                 id.append(3)
-
+        #情感词列表
+        word_sense=[]
+        #全量词列表
         word_nake = []
         for i in word_list:
             if i in senDict.keys():
                 word_nake.append(i)
+                word_sense.append(i)
             elif i in notList:
                 word_nake.append(i)
             elif i in degreeDict.keys():
@@ -74,15 +77,15 @@ def emotional_analysis(text_all):
         for i in range(len(id)):
             if id[i] == 1:
                 score = w * senDict[word_nake[i]]
+                score_list.append(score)
                 w = 1
             elif id[i] == 2:
                 w = -1
             elif id[i] == 3:
                 w = w * degreeDict[word_nake[i]]
-            score_list.append(score)
             score = 0
         score_df = pd.DataFrame()
-        score_df['word'] = word_nake
+        score_df['word'] = word_sense
         score_df['score'] = score_list
         #score_df = score_df.drop_duplicates('word', keep='first')
         return score_df
