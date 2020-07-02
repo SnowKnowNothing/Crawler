@@ -55,7 +55,7 @@ def main(cid_list):
         url = "https://api.bilibili.com/x/v1/dm/list.so?oid={}".format(cid_list[i])
         url_list.append(url)
         file_name = "./AnimeBarrageFiles/now{}.csv".format(i + 1)
-        with open(file_name,'w',newline='',errors='ignore') as fd:
+        with open(file_name,'w',newline='',errors='ignore',encoding='utf-8') as fd:
             comment = request_get_comment(url)
             writer = csv.writer(fd)
             writer.writerow(tableheader)

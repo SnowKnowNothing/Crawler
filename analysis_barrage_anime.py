@@ -165,7 +165,7 @@ def main(length):
     i = 1
     for path in path_list:
         '''读取csv数据源文件'''
-        data = pd.read_csv(path.strip(),encoding='gbk',engine='python')
+        data = pd.read_csv(path.strip(),encoding='utf-8',engine='python')
 
         '''统计每一集的弹幕总量，保存在字典中'''
         episode_comment_dic[i] = every_episode_comment(data)
@@ -265,4 +265,4 @@ def main(length):
     page.render('result.html')
 
 if __name__ == '__main__':
-    main(15)
+    main(4)

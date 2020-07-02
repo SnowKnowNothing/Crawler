@@ -45,11 +45,11 @@ def emotional_analysis(text_all):
     for d in degreeList:
         degreeDict[d.split(',')[0]] = float(d.split(',')[1])
 
-    t = []
-    t.append(sent2word(text_all, stopwords))
+
 
     # 评分方法
     def word_score(word_list):
+        #词类列表
         id = []
         for i in word_list:
             if i in senDict.keys():
@@ -68,30 +68,24 @@ def emotional_analysis(text_all):
             elif i in degreeDict.keys():
                 word_nake.append(i)
 
-        score = 0
+        score_list = []
         w = 1
-        score0 = 0
+        score = 0
         for i in range(len(id)):
             if id[i] == 1:
-                score0 = w * senDict[word_nake[i]]
+                score = w * senDict[word_nake[i]]
                 w = 1
             elif id[i] == 2:
                 w = -1
             elif id[i] == 3:
                 w = w * degreeDict[word_nake[i]]
-            score = score + score0
-            score0 = 0
-        return score
+            score_list.append(score)
+            score = 0
+        score_df = pd.DataFrame()
+        score_df['word'] = word_nake
+        score_df['score'] = score_list
+        #score_df = score_df.drop_duplicates('word', keep='first')
+        return score_df
 
-    score_list = []
-    for i in t[0]:
-        score_list.append(word_score(i))
-    score_df = pd.DataFrame()
-    score_df['word'] = t[0]
-    score_df['score'] = score_list
-    score_df = score_df.drop_duplicates('word', keep='first')
-    #print(score_df)
-    return score_df
-
-
+    return word_score(sent2word(text_all, stopwords))
 
