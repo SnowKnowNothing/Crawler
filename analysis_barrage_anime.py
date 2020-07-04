@@ -66,8 +66,6 @@ def every_episode_user(data):
 def every_episode_comment(data):
     df = data.drop_duplicates()
     barrage_sum = len(df)
-    if barrage_sum==3000:
-        barrage_sum=int(barrage_sum*random.uniform(0.6,1))
     return barrage_sum
 
 '''计算发送弹幕数量排名--柱形图'''
